@@ -1,0 +1,74 @@
+name: LiveTrans
+options:
+  bundleIdPrefix: com.livetrans
+  deploymentTarget:
+    iOS: "18.0"
+  createIntermediateGroups: true
+  developmentLanguage: ko
+packages:
+  LiveTransCore:
+    path: ../
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    IPHONEOS_DEPLOYMENT_TARGET: "18.0"
+    CODE_SIGN_STYLE: Automatic
+    DEVELOPMENT_TEAM: ""
+targets:
+  LiveTrans:
+    type: application
+    platform: iOS
+    sources:
+      - path: Shared
+      - path: LiveTrans
+    dependencies:
+      - package: LiveTransCore
+      - target: BroadcastExtension
+        embed: true
+    info:
+      path: LiveTrans/Info.plist
+      properties:
+        CFBundleDisplayName: live-trans
+        CFBundleShortVersionString: "0.1.0"
+        CFBundleVersion: "1"
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        UIBackgroundModes:
+          - audio
+        NSAppTransportSecurity:
+          NSAllowsArbitraryLoads: false
+          NSExceptionDomains:
+            openapi.naver.com:
+              NSExceptionAllowsInsecureHTTPLoads: false
+        LiveTransPapagoClientID: ""
+        LiveTransPapagoClientSecret: ""
+        LiveTransLoopbackPort: 19642
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.livetrans.ios
+        TARGETED_DEVICE_FAMILY: "1,2"
+        INFOPLIST_KEY_UIUserInterfaceStyle: Automatic
+        SWIFT_EMIT_LOC_STRINGS: false
+  BroadcastExtension:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: Shared
+      - path: BroadcastExtension
+    info:
+      path: BroadcastExtension/Info.plist
+      properties:
+        CFBundleDisplayName: live-trans 캡처
+        CFBundleShortVersionString: "0.1.0"
+        CFBundleVersion: "1"
+        NSExtension:
+          NSExtensionAttributes:
+            RPBroadcastProcessMode: RPBroadcastProcessModeSampleBuffer
+          NSExtensionPointIdentifier: com.apple.broadcast-services-upload
+          NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).SampleHandler
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.livetrans.ios.BroadcastExtension
+        TARGETED_DEVICE_FAMILY: "1,2"
+        SKIP_INSTALL: YES

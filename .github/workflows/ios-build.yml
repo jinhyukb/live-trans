@@ -1,0 +1,56 @@
+name: ios-build
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  core-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: swift-actions/setup-swift@v2
+        with:
+          swift-version: "6.0"
+      - run: swift test
+        working-directory: .
+
+  build-ipa:
+    runs-on: macos-15
+    needs: core-tests
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate project
+        working-directory: ios
+        run: xcodegen generate
+
+      - name: Build unsigned .ipa
+        working-directory: ios
+        run: |
+          rm -rf build Payload
+          xcodebuild \
+            -project LiveTrans.xcodeproj \
+            -scheme LiveTrans \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            build
+          mkdir -p Payload
+          cp -R build/Build/Products/Release-iphoneos/LiveTrans.app Payload/
+          zip -ry live-trans.ipa Payload
+          echo "artifact created"
+
+      - name: Upload .ipa artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: live-trans-ipa
+          path: ios/live-trans.ipa
+          if-no-files-found: error
