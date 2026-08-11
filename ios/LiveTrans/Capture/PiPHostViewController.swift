@@ -39,8 +39,8 @@ final class PiPHostViewController: UIViewController {
     }
 
     func enqueue(_ sampleBuffer: CMSampleBuffer) {
-        if displayLayer.sampleBufferRenderer.readyForMoreMediaData {
-            displayLayer.sampleBufferRenderer.enqueueSampleBuffer(sampleBuffer)
+        if displayLayer.sampleBufferRenderer.isReadyForMoreMediaData {
+            displayLayer.sampleBufferRenderer.enqueue(sampleBuffer)
         }
     }
 

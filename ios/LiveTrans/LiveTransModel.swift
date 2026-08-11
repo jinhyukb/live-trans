@@ -22,7 +22,7 @@ final class LiveTransModel: ObservableObject {
     private var pipeline: TranslationPipeline<OCRFrame>?
     private weak var pipHost: PiPHostViewController?
 
-    private let session: TranslationSession
+    private let session: LiveTransCore.TranslationSession
     private let onboarding: OnboardingFlow
     private let coordinator: TranslationSessionCoordinator
 
@@ -31,7 +31,7 @@ final class LiveTransModel: ObservableObject {
         let onboardingPersistence = UserDefaultsOnboardingPersistence()
         let quotaStorage = UserDefaultsQuotaStorage()
 
-        let session = TranslationSession(persistence: sessionPersistence)
+        let session = LiveTransCore.TranslationSession(persistence: sessionPersistence)
         let onboarding = OnboardingFlow(persistence: onboardingPersistence)
         let coordinator = TranslationSessionCoordinator(
             session: session,

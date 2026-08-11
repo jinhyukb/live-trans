@@ -22,7 +22,7 @@ struct RootView: View {
                 }
         )
         .translationTask(model.appleTranslationConfiguration) { session in
-            await model.adoptAppleTranslationSession(session)
+            model.adoptAppleTranslationSession(session)
         }
     }
 }
