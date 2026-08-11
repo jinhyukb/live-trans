@@ -25,11 +25,9 @@ public struct CaptureWireParser: Sendable {
         while true {
             guard buffer.count >= 5 else { return }
             let type = CaptureWireMessageType(rawValue: buffer[buffer.startIndex])
-            let length = UInt32(buffer[buffer.index(buffer.startIndex, offsetBy: 1)])
-                << 24
-                | UInt32(buffer[buffer.index(buffer.startIndex, offsetBy: 2)]) << 16
-                | UInt32(buffer[buffer.index(buffer.startIndex, offsetBy: 3)]) << 8
-                | UInt32(buffer[buffer.index(buffer.startIndex, offsetBy: 4)])
+            let length = buffer.withUnsafeBytes { bytes in
+                bytes.loadUnaligned(fromByteOffset: 1, as: UInt32.self)
+            }.bigEndian
             let payloadLength = Int(length)
             guard buffer.count >= 5 + payloadLength else { return }
             let payload = buffer.subdata(

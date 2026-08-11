@@ -64,7 +64,8 @@ final class SampleHandler: RPBroadcastSampleHandler, @unchecked Sendable {
         if mediaSubType == kCMVideoCodecType_H264 {
             var spsSize = 0
             var spsCount = 0
-            var sps = UnsafePointer<UInt8>?
+            var sps: UnsafePointer<UInt8>?
+            var nalHeaderLength: Int32 = 4
             var status = CMVideoFormatDescriptionGetH264ParameterSetAtIndex(
                 formatDescription,
                 parameterSetIndex: 0,
@@ -76,10 +77,10 @@ final class SampleHandler: RPBroadcastSampleHandler, @unchecked Sendable {
             if status == noErr, let sps {
                 spsData = Data(bytes: sps, count: spsSize)
             }
-            var pps = UnsafePointer<UInt8>?
+            var pps: UnsafePointer<UInt8>?
             var ppsSize = 0
             var ppsCount = 0
-            var ppsNalHeader = 4
+            var ppsNalHeader: Int32 = 4
             status = CMVideoFormatDescriptionGetH264ParameterSetAtIndex(
                 formatDescription,
                 parameterSetIndex: 1,

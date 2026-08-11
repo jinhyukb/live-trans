@@ -60,14 +60,14 @@ final class LoopbackServer: @unchecked Sendable {
     }
 
     private func handleFormat(_ payload: Data) {
-        guard payload.count >= 8 else { return }
+        guard payload.count >= 12 else { return }
         mediaSubType = payload.withUnsafeBytes { $0.loadUnaligned(fromByteOffset: 0, as: UInt32.self) }.bigEndian
         let nalHeaderLength = payload.withUnsafeBytes {
             $0.loadUnaligned(fromByteOffset: 4, as: Int.self).bigEndian
         }
         _ = nalHeaderLength
 
-        var offset = 8
+        var offset = 12
         let sps = readLengthPrefixed(payload, at: &offset)
         let pps = readLengthPrefixed(payload, at: &offset)
         guard let sps, let pps else { return }
