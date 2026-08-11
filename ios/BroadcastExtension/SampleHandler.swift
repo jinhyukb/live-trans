@@ -100,8 +100,8 @@ final class SampleHandler: RPBroadcastSampleHandler, @unchecked Sendable {
         var magic = UInt32(mediaSubType).bigEndian
         withUnsafeBytes(of: &magic) { payload.append(contentsOf: $0) }
         withUnsafeBytes(of: &nalHeaderLength) { payload.append(Data($0)) }
-        writeLengthPrefixed(&payload, data: spsData)
-        writeLengthPrefixed(&payload, data: ppsData)
+        writeLengthPrefixed(&payload, payload: spsData)
+        writeLengthPrefixed(&payload, payload: ppsData)
 
         send(.format, payload: payload, on: connection)
         return true
