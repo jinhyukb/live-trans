@@ -3,6 +3,10 @@ import PackageDescription
 
 let package = Package(
     name: "LiveTransCore",
+    platforms: [
+        .iOS(.v18),
+        .macOS(.v13)
+    ],
     products: [
         .library(
             name: "LiveTransCore",
