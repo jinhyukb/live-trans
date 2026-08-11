@@ -126,7 +126,7 @@ class FrameProcessor(private val overlay: OverlayController) {
 
     private fun inflated(rect: Rect): Rect {
         val copy = Rect(rect)
-        copy.inflate(OVERLAY_PADDING, OVERLAY_PADDING)
+        copy.inset(-OVERLAY_PADDING, -OVERLAY_PADDING)
         return copy
     }
 
