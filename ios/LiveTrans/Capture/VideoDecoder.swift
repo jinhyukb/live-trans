@@ -14,9 +14,10 @@ final class VideoDecoder: @unchecked Sendable {
 
     func decode(_ sampleBuffer: CMSampleBuffer) async -> DecodedFrame {
         let format = CMSampleBufferGetFormatDescription(sampleBuffer)
+        let box = SampleBufferBox(sampleBuffer)
         return await withCheckedContinuation { continuation in
             queue.async { [self] in
-                self.finishDecode(sampleBuffer, format: format, continuation: continuation)
+                self.finishDecode(box.value, format: format, continuation: continuation)
             }
         }
     }
@@ -82,7 +83,7 @@ final class VideoDecoder: @unchecked Sendable {
     }
 
     private func createSession(with format: CMFormatDescription) {
-        var pixelBufferAttributes: [CFString: Any] = [
+        let pixelBufferAttributes: [CFString: Any] = [
             kCVPixelBufferPixelFormatTypeKey: kCVPixelFormatType_32BGRA
         ]
         let status = VTDecompressionSessionCreate(
@@ -96,6 +97,14 @@ final class VideoDecoder: @unchecked Sendable {
         if status != noErr {
             session = nil
         }
+    }
+}
+
+private final class SampleBufferBox: @unchecked Sendable {
+    let value: CMSampleBuffer
+
+    init(_ value: CMSampleBuffer) {
+        self.value = value
     }
 }
 

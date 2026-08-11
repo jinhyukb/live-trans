@@ -1,32 +1,56 @@
 import Foundation
-import Translation
+@preconcurrency import Translation
 import LiveTransCore
 
-struct AppleOnDeviceTranslator: Sendable {
-    func translate(_ text: String, from source: Language, to target: TargetLanguage) async throws -> String {
-        guard let sourceLanguage = appleLanguage(for: source),
-              let targetLanguage = appleLanguage(for: .korean)
-        else { throw TranslationUnavailableError.unsupportedSource }
+enum TranslationUnavailableError: Error {
+    case unsupportedSource
+    case translationNotReady
+}
 
+final class AppleOnDeviceTranslator: @unchecked Sendable {
+    private let lock = NSLock()
+    private var session: Translation.TranslationSession?
+
+    func adopt(_ session: Translation.TranslationSession) {
+        lock.lock()
+        defer { lock.unlock() }
+        self.session = session
+    }
+
+    func translate(
+        _ text: String,
+        from source: Language,
+        to target: TargetLanguage
+    ) async throws -> String {
         let configuration = Translation.TranslationSession.Configuration(
-            source: sourceLanguage,
-            target: targetLanguage
+            source: appleLanguage(for: source),
+            target: appleTargetLanguage(for: target)
         )
-        let session = Translation.TranslationSession(configuration: configuration)
-        let result = try await session.translate(text)
-        return result
+        guard let session = lockedSession else {
+            throw TranslationUnavailableError.translationNotReady
+        }
+        let response = try await session.translate(text, using: configuration)
+        return response.targetText
+    }
+
+    private var lockedSession: Translation.TranslationSession? {
+        lock.lock()
+        defer { lock.unlock() }
+        return session
     }
 
     private func appleLanguage(for language: Language) -> Locale.Language? {
         switch language {
-        case .english: return Locale.Language(isoLanguageCode: "en")
-        case .japanese: return Locale.Language(isoLanguageCode: "ja")
-        case .korean: return Locale.Language(isoLanguageCode: "ko")
+        case .english: return Locale.Language(identifier: "en")
+        case .japanese: return Locale.Language(identifier: "ja")
+        case .korean: return Locale.Language(identifier: "ko")
         case .undetermined: return nil
         }
     }
-}
 
-enum TranslationUnavailableError: Error {
-    case unsupportedSource
+    private func appleTargetLanguage(for target: TargetLanguage) -> Locale.Language? {
+        switch target {
+        case .korean: return Locale.Language(identifier: "ko")
+        }
+    }
 }

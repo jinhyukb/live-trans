@@ -1,6 +1,7 @@
 import Foundation
 import Combine
 @preconcurrency import CoreMedia
+@preconcurrency import Translation
 import LiveTransCore
 
 @MainActor
@@ -10,6 +11,7 @@ final class LiveTransModel: ObservableObject {
     @Published var captionState: CaptionState = .idle
     @Published var captionShown = false
     @Published var captureActive = false
+    @Published var appleTranslationConfiguration: Translation.TranslationSession.Configuration?
 
     private let onDeviceTranslator = AppleOnDeviceTranslator()
     private let visionOCR = VisionOCRService()
@@ -40,6 +42,10 @@ final class LiveTransModel: ObservableObject {
         self.onboarding = onboarding
         self.coordinator = coordinator
         self.pipHost = pipHost
+        appleTranslationConfiguration = Translation.TranslationSession.Configuration(
+            source: nil,
+            target: Locale.Language(identifier: "ko")
+        )
         sessionState = session.state
         onboardingState = onboarding.state
 
@@ -82,6 +88,10 @@ final class LiveTransModel: ObservableObject {
 
     func manualSource(_ language: Language) {
         pipeline?.manualSourceLanguage = language
+    }
+
+    func adoptAppleTranslationSession(_ session: Translation.TranslationSession) {
+        onDeviceTranslator.adopt(session)
     }
 
     private func makePipeline(

@@ -1,4 +1,5 @@
 import SwiftUI
+@preconcurrency import Translation
 import LiveTransCore
 
 struct RootView: View {
@@ -20,6 +21,9 @@ struct RootView: View {
                     model.setPiPHost(pipHost)
                 }
         )
+        .translationTask(model.appleTranslationConfiguration) { session in
+            await model.adoptAppleTranslationSession(session)
+        }
     }
 }
 
