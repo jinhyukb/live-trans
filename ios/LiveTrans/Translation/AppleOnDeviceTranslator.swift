@@ -8,20 +8,20 @@ struct AppleOnDeviceTranslator: Sendable {
               let targetLanguage = appleLanguage(for: .korean)
         else { throw TranslationUnavailableError.unsupportedSource }
 
-        let configuration = TranslationSession.Configuration(
+        let configuration = Translation.TranslationSession.Configuration(
             source: sourceLanguage,
             target: targetLanguage
         )
-        let session = TranslationSession(configuration: configuration)
+        let session = Translation.TranslationSession(configuration: configuration)
         let result = try await session.translate(text)
         return result
     }
 
-    private func appleLanguage(for language: Language) -> Translation.Language? {
+    private func appleLanguage(for language: Language) -> Locale.Language? {
         switch language {
-        case .english: return .init(isoLanguageCode: "en")
-        case .japanese: return .init(isoLanguageCode: "ja")
-        case .korean: return .init(isoLanguageCode: "ko")
+        case .english: return Locale.Language(isoLanguageCode: "en")
+        case .japanese: return Locale.Language(isoLanguageCode: "ja")
+        case .korean: return Locale.Language(isoLanguageCode: "ko")
         case .undetermined: return nil
         }
     }

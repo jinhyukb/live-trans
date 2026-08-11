@@ -65,6 +65,19 @@ final class CaptionCompositor: @unchecked Sendable {
             draw(overlay, in: context, width: width, height: height)
         }
 
+        var formatDescriptionOut: CMVideoFormatDescription?
+        let formatStatus = CMVideoFormatDescriptionCreateForImageBuffer(
+            allocator: kCFAllocatorDefault,
+            imageBuffer: copied,
+            formatDescriptionOut: &formatDescriptionOut
+        )
+        guard formatStatus == noErr, let formatDescriptionOut else { return nil }
+
+        var timing = CMSampleTimingInfo(
+            duration: .invalid,
+            presentationTimeStamp: CMSampleBufferGetPresentationTimeStamp(sampleBuffer),
+            decodeTimeStamp: .invalid
+        )
         var newSample: CMSampleBuffer?
         let status = CMSampleBufferCreateForImageBuffer(
             allocator: kCFAllocatorDefault,
@@ -72,14 +85,11 @@ final class CaptionCompositor: @unchecked Sendable {
             dataReady: true,
             makeDataReadyCallback: nil,
             refcon: nil,
-            formatDescriptionOut: nil,
+            formatDescription: formatDescriptionOut,
+            sampleTiming: &timing,
             sampleBufferOut: &newSample
         )
         guard status == noErr, let newSample else { return nil }
-        CMSampleBufferSetPresentationTimeStamp(
-            newSample,
-            at: CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
-        )
         return newSample
     }
 

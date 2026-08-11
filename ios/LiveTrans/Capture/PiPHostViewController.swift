@@ -32,7 +32,7 @@ final class PiPHostViewController: UIViewController {
             sampleBufferDisplayLayer: displayLayer,
             playbackDelegate: self
         )
-        guard let controller = AVPictureInPictureController(contentSource: contentSource) else { return }
+        let controller = AVPictureInPictureController(contentSource: contentSource)
         pictureInPictureController = controller
         controller.canStartPictureInPictureAutomaticallyFromInline = true
         onChangeCaptionVisibility?()
@@ -49,7 +49,7 @@ final class PiPHostViewController: UIViewController {
     }
 }
 
-extension PiPHostViewController: AVPictureInPictureSampleBufferPlaybackDelegate {
+extension PiPHostViewController: @preconcurrency AVPictureInPictureSampleBufferPlaybackDelegate {
     func pictureInPictureController(
         _ pictureInPictureController: AVPictureInPictureController,
         setPlaying playing: Bool
@@ -77,7 +77,7 @@ extension PiPHostViewController: AVPictureInPictureSampleBufferPlaybackDelegate 
     func pictureInPictureController(
         _ pictureInPictureController: AVPictureInPictureController,
         skipByInterval skipInterval: CMTime,
-        completion completionHandler: @escaping @Sendable () -> Void
+        completion completionHandler: @escaping () -> Void
     ) {
         completionHandler()
     }

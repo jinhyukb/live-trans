@@ -60,7 +60,7 @@ struct UserDefaultsOnboardingPersistence: OnboardingPersisting {
     }
 }
 
-struct UserDefaultsQuotaStorage: TranslationQuotaStoring {
+struct UserDefaultsQuotaStorage: TranslationQuotaStoring, @unchecked Sendable {
     private let defaults: UserDefaults
 
     init(defaults: UserDefaults = .standard) {

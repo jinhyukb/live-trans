@@ -200,12 +200,13 @@ final class LiveTransModel: ObservableObject {
     ) async {
         guard captureActive else { return }
 
-        guard let decoded = await decoder.decode(sampleBuffer) else { return }
-        let composed = compositor.composite(decoded)
-        let toDisplay = composed ?? decoded
+        let decoded = await decoder.decode(sampleBuffer)
+        guard let decodedBuffer = decoded.sampleBuffer else { return }
+        let composed = compositor.composite(decodedBuffer)
+        let toDisplay = composed ?? decodedBuffer
         enqueueToPiP(toDisplay)
 
-        guard let cgImage = FrameFingerprinter.cgImage(from: decoded) else { return }
+        guard let cgImage = FrameFingerprinter.cgImage(from: decodedBuffer) else { return }
         let fingerprint = FrameFingerprinter.fingerprint(cgImage: cgImage)
         let activity = coordinator.observeScreen(fingerprint: fingerprint, at: Date())
         guard activity == .active else { return }
