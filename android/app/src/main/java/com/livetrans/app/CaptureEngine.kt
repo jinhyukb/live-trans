@@ -24,7 +24,8 @@ class CaptureEngine(
 
     fun start() {
         thread.start()
-        handler = Handler(thread.looper)
+        val captureHandler = Handler(thread.looper)
+        handler = captureHandler
         val reader = ImageReader.newInstance(width, height, PixelFormat.RGBA_8888, 2)
         imageReader = reader
         reader.setOnImageAvailableListener({ available ->
@@ -36,7 +37,7 @@ class CaptureEngine(
                     image.close()
                 }
             }
-        }, handler)
+        }, captureHandler)
         virtualDisplay = projection.createVirtualDisplay(
             "LiveTransCapture",
             width,
@@ -45,7 +46,7 @@ class CaptureEngine(
             DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
             reader.surface,
             null,
-            handler
+            captureHandler
         )
     }
 
