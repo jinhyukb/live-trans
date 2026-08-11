@@ -6,10 +6,10 @@ import android.os.SystemClock
 import com.google.android.gms.tasks.Tasks
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
-import com.google.mlkit.vision.text.TextRecognizerOptions
-import com.google.mlkit.vision.translate.Translation
-import com.google.mlkit.vision.translate.Translator
-import com.google.mlkit.vision.translate.TranslatorOptions
+import com.google.mlkit.vision.text.latin.TextRecognizerOptions
+import com.google.mlkit.nl.translate.Translation
+import com.google.mlkit.nl.translate.Translator
+import com.google.mlkit.nl.translate.TranslatorOptions
 import java.util.concurrent.Executors
 
 class FrameProcessor(private val overlay: OverlayController) {
@@ -124,7 +124,11 @@ class FrameProcessor(private val overlay: OverlayController) {
         return false
     }
 
-    private fun inflated(rect: Rect): Rect = Rect(rect).apply { inflate(OVERLAY_PADDING, OVERLAY_PADDING) }
+    private fun inflated(rect: Rect): Rect {
+        val copy = Rect(rect)
+        copy.inflate(OVERLAY_PADDING, OVERLAY_PADDING)
+        return copy
+    }
 
     private companion object {
         const val MIN_INTERVAL_MS = 700L

@@ -65,7 +65,7 @@ class LiveTransService : Service() {
             Handler(Looper.getMainLooper())
         )
 
-        isRunning = true
+        running = true
         return START_NOT_STICKY
     }
 
@@ -75,7 +75,7 @@ class LiveTransService : Service() {
     }
 
     private fun stopEverything() {
-        isRunning = false
+        running = false
         capture?.stop()
         projection?.stop()
         overlay?.teardown()
@@ -103,8 +103,8 @@ class LiveTransService : Service() {
             "실시간 번역",
             NotificationManager.IMPORTANCE_LOW
         )
-        getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            .createNotificationChannel(channel)
+        val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        manager.createNotificationChannel(channel)
     }
 
     private fun buildNotification(): Notification {

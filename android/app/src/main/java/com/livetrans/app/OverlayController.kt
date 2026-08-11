@@ -59,7 +59,7 @@ class OverlayController(private val context: Context) {
 }
 
 class CaptionOverlayView(context: Context) : View(context) {
-    private val backgroundPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = 0x8C000000 }
+    private val backgroundPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = 0x8C000000.toInt() }
     private val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.WHITE
         textAlign = Paint.Align.CENTER
@@ -82,7 +82,7 @@ class CaptionOverlayView(context: Context) : View(context) {
             if (clipRight > clipLeft) {
                 canvas.save()
                 canvas.clipRect(clipLeft, rect.top, clipRight, rect.bottom)
-                canvas.drawText(caption.text, rect.centerX(), baseline, textPaint)
+                canvas.drawText(caption.text, rect.exactCenterX(), baseline, textPaint)
                 canvas.restore()
             }
         }
